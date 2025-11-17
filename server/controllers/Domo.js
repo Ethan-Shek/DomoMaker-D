@@ -5,7 +5,6 @@ const makerPage = (req, res) => {
     return res.render('app');
 };
 
-
 const makeDomo = async (req, res) => {
     if (!req.body.name || !req.body.age) {
         return res.status(400).json({ error: 'Both name and age are required!' });
@@ -20,9 +19,15 @@ const makeDomo = async (req, res) => {
     try {
         const newDomo = new Domo(domoData);
         await newDomo.save();
-        return res.status(201).json({ name: newDomo.name, age: newDomo.age }); return rs.json({ redirect: '/maker' });
+
+        // FIXED: only one return statement
+        return res.status(201).json({
+            name: newDomo.name,
+            age: newDomo.age,
+            redirect: '/maker',
+        });
     } catch (err) {
-        console.log(err);
+        console.log(err); // remove if ESLint complains
         if (err.code === 11000) {
             return res.status(400).json({ error: 'Domo already exists!' });
         }
@@ -37,7 +42,7 @@ const getDomos = async (req, res) => {
 
         return res.json({ domos: docs });
     } catch (err) {
-        console.log(err);
+        console.log(err); // remove if ESLint complains
         return res.status(500).json({ error: 'Error retrieving domos!' });
     }
 };
